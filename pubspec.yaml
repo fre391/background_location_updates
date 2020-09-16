@@ -1,8 +1,8 @@
 name: background_location_updates
-description: A new flutter plugin project.
+description: A Flutter plugin for getting location updates even when the app is in background, but not killed.
 version: 0.0.1
-author:
-homepage:
+author: Markus Freyt
+homepage: 
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
