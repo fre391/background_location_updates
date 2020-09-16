@@ -7,7 +7,7 @@ A Flutter plugin for getting location updates even when the app is in background
 - IOS, written in Swift
 
 ```diff
-Please note: This appliction is not a package. Currently the code is under construction.
+Please note: Currently this flutter plugin is under construction.
 ```
 
 ## Overview
@@ -30,6 +30,6 @@ following soon
 
 
 ```diff
-Please note: This appliction is not a package. Currently the code is under construction.
+Please note: Currently this flutter plugin is under construction.
 ```
 
