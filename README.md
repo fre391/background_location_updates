@@ -6,8 +6,9 @@ A Flutter plugin for getting location updates even when the app is in background
 
 - IOS, written in Swift
 
-<< Please note: This appliction is not a package. Currently the code is under construction. >>
-
+<div class="text-red">
+Please note: This appliction is not a package. Currently the code is under construction.
+</div>
 
 ## Overview
 This flutter plugin will request location updates and an additional payload (at the moment to generate a sequence a random 8 digit integer each second). It needs to be started / stopped by the user. As a confirmation a notification will be sent. It will run in fore- and background and automatically stops when app exits.
@@ -28,4 +29,6 @@ following soon
 following soon
 
 
-<< Please note: Currently the code is under construction. >>
+<div class="text-red">
+Please note: This appliction is not a package. Currently the code is under construction.
+</div>
