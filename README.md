@@ -6,7 +6,8 @@ A Flutter plugin for getting location updates even when the app is in background
 
 - IOS, written in Swift
 
-<div class="text-red">
+<span class="float-left text-red tooltipped tooltipped-n" aria-label="Does not meet accessibility standards"><%= octicon("alert") %></span>
+<div class="text-orange-light mb-2">
 Please note: This appliction is not a package. Currently the code is under construction.
 </div>
 
@@ -29,6 +30,7 @@ following soon
 following soon
 
 
-<div class="text-red">
+<span class="float-left text-red tooltipped tooltipped-n" aria-label="Does not meet accessibility standards"><%= octicon("alert") %></span>
+<div class="text-orange-light mb-2">
 Please note: This appliction is not a package. Currently the code is under construction.
 </div>
