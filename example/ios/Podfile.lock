@@ -1,0 +1,55 @@
+PODS:
+  - background_location_updates (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+  - flutter_beep (0.0.1):
+    - Flutter
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
+  - path_provider (0.0.1):
+    - Flutter
+  - "permission_handler (5.0.1+1)":
+    - Flutter
+  - sqflite (0.0.1):
+    - Flutter
+    - FMDB (~> 2.7.2)
+
+DEPENDENCIES:
+  - background_location_updates (from `.symlinks/plugins/background_location_updates/ios`)
+  - Flutter (from `Flutter`)
+  - flutter_beep (from `.symlinks/plugins/flutter_beep/ios`)
+  - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
+  - sqflite (from `.symlinks/plugins/sqflite/ios`)
+
+SPEC REPOS:
+  trunk:
+    - FMDB
+
+EXTERNAL SOURCES:
+  background_location_updates:
+    :path: ".symlinks/plugins/background_location_updates/ios"
+  Flutter:
+    :path: Flutter
+  flutter_beep:
+    :path: ".symlinks/plugins/flutter_beep/ios"
+  path_provider:
+    :path: ".symlinks/plugins/path_provider/ios"
+  permission_handler:
+    :path: ".symlinks/plugins/permission_handler/ios"
+  sqflite:
+    :path: ".symlinks/plugins/sqflite/ios"
+
+SPEC CHECKSUMS:
+  background_location_updates: 7a40985f32e4bb59f8b2d9c9b641dd130b443d2f
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  flutter_beep: 54fb393b22dfa0f0e4573c81b1c74dd71c4e5af8
+  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
+  permission_handler: eac8e15b4a1a3fba55b761d19f3f4e6b005d15b6
+  sqflite: 4001a31ff81d210346b500c55b17f4d6c7589dd0
+
+PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+
+COCOAPODS: 1.9.3
