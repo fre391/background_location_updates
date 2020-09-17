@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:core';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:background_location_updates/background_location_updates.dart';
@@ -62,54 +60,36 @@ class _MyHomePageState extends State<MyHomePage> {
     ].request();
     print(statuses[Permission.location]);
 
-    geoUpdates.init(callback);
+    geoUpdates.init((method, args) {
+      switch (method) {
+        case "onMessage":
+          setState(() {
+            String s = args;
+            status = s;
+            print(args);
+          });
+          break;
+        case "onLocation":
+          setState(() {
+            Location location = args;
+            var point = LatLng(location.latitude, location.longitude);
+            points.add(point);
+            print("New Location: ${location.latitude} / ${location.longitude}");
+          });
+          break;
+        case "onData":
+          if (soundOn) FlutterBeep.beep();
+          updateState(args.toString());
+          break;
+        case "onStatus":
+          setState(() {
+            isRunning = args;
+          });
+          break;
+      }
+    });
     geoUpdates.setLocationSettings(
         accuracy: LocationAccuracy.high, intervalMilliSecondsAndroid: 1000, distanceFilterMeter: 0);
-  }
-
-  Future<dynamic> callback(call) {
-    var args = jsonDecode(call.arguments);
-    switch (call.method) {
-      case "onMessage":
-        onMessage(args);
-        break;
-      case "onLocation":
-        onLocation(args);
-        break;
-      case "onData":
-        onData(args[0]);
-        break;
-      case "onStatus":
-        onStatus(args[0]);
-        break;
-    }
-  }
-
-  void onMessage(String message) {
-    setState(() {
-      status = message;
-      print(message);
-    });
-  }
-
-  void onLocation(Map l) {
-    setState(() {
-      location = l["latitude"].toString() + " / " + l["longitude"].toString();
-      var point = LatLng(l["latitude"], l["longitude"]);
-      points.add(point);
-      print(location);
-    });
-  }
-
-  void onData(int value) {
-    if (soundOn) FlutterBeep.beep();
-    updateState(value.toString());
-  }
-
-  void onStatus(bool value) {
-    setState(() {
-      isRunning = value;
-    });
   }
 
   updateState(String msg) {
@@ -150,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ? RaisedButton(
                           onPressed: () async {
                             /* start service via forgroundChannel */
-                            await geoUpdates.start();
+                            geoUpdates.start();
                             status = "STARTED";
                             setState(() {});
                           },
@@ -160,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       : RaisedButton(
                           onPressed: () async {
                             /* stop service via forgroundChannel */
-                            await geoUpdates.stop();
+                            geoUpdates.stop();
                             status = "STOPPED";
                             setState(() {});
                           },
@@ -170,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   RaisedButton(
                     onPressed: () async {
                       /* request data via forgroundChannel */
-                      await geoUpdates.get();
+                      geoUpdates.get();
                     },
                     child: Icon(Icons.autorenew),
                     padding: EdgeInsets.all(15),
