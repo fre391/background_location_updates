@@ -19,33 +19,41 @@ public class SwiftBackgroundLocationUpdatesPlugin: NSObject, FlutterPlugin {
         
         // configure location updates
         locationservice.setup(channel: self.channel)
-        self.service.setup(channel: self.channel)
+        self.locationservice.setLocationManager(config: "defaults")
+        service.setup(channel: self.channel)
     }
     
       public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
            switch call.method {
              case "start":
                // start the Service manually
-                let success = self.service.start();
+                self.service.start();
+                self.locationservice.start()
                 self.callback("onMessage", data: "Service started")
                 self.isRunning = true;
                 self.callback("onStatus", data: [self.isRunning] )
-               result(success)
+               result(true)
              case "stop":
                // stop the Service manually
-                let success = self.service.stop()
-               self.callback("onMessage", data: "Service stopped")
-               self.isRunning = false;
-               self.callback("onStatus", data: [self.isRunning] )
-               result(success)
-             case "get":
+                self.service.stop()
+                self.locationservice.stop()
+                self.callback("onMessage", data: "Service stopped")
+                self.isRunning = false;
+                self.callback("onStatus", data: [self.isRunning] )
+                result(true)
+           case "locationSettings":
+                var settings = call.arguments as! String
+                settings = settings.replacingOccurrences(of: "\'", with: "\"")
+                self.locationservice.setLocationManager(config: settings)
+                result(true)
+           case "get":
                // request new data manually
                let success = self.service.get()
                self.callback("onMessage", data: "Service value")
                result(success)
              case "initialize":
-                 /* not used in IOS (Andoid only)*/
-                 return
+                /* not used in IOS (Andoid only)*/
+                return
              case "getPlatformVersion":
                 result("iOS " + UIDevice.current.systemVersion)
                 return

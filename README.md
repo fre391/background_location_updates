@@ -110,12 +110,8 @@ Future<dynamic> callback(call) {
 ```
 
 
-
-
 ## Implementation Details
-```diff
 
-```
 
 ### Flutter / Dart
 following soon

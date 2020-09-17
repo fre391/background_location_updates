@@ -10,10 +10,15 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
 import android.util.Log
+import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
 
 class myLocationService: mService() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -22,10 +27,7 @@ class myLocationService: mService() {
 
     companion object {
         fun startService(context: Context, intent: Intent) {
-            var handleID: Long = intent!!.getLongExtra("handleID", 0L)
-            val startIntent = Intent(context, myLocationService::class.java)
-            startIntent.putExtra("handleID", handleID)
-            ContextCompat.startForegroundService(context, startIntent)
+            ContextCompat.startForegroundService(context, intent)
         }
         fun stopService(context: Context) {
             val stopIntent = Intent(context, myLocationService::class.java)
@@ -33,21 +35,51 @@ class myLocationService: mService() {
         }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
-        startLocationUpdates()
-        return Service.START_STICKY
-    }
-
     @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this!!)
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
+        var jsonSettings: String = intent!!.getStringExtra("settings")
+        val gson = GsonBuilder().create()
+        val mapSettings = gson.fromJson<Map<String, Any>>(jsonSettings, object : TypeToken<Map<String, Any>>() {}.type)
+        startLocationUpdates(mapSettings)
+        return Service.START_STICKY
+    }
+
+    //start location updates
+    @SuppressLint("MissingPermission")
+    private fun startLocationUpdates(mapSettings: Map<String, Any>) {
+        setLocationRequest(mapSettings)
+        setLocationCallback()
+        fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                null /* Looper */
+        )
+    }
+
+    private fun setLocationRequest(mapSettings: Map<String, Any>){
         locationRequest = LocationRequest()
-        locationRequest.interval = 1000
-        locationRequest.fastestInterval = 1000
-        locationRequest.smallestDisplacement = 0f // 170 m = 0.1 mile
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY //set according to your app function
+        locationRequest.fastestInterval = mapSettings["intervalMilliSeconds"] as? Long ?: 1000
+        locationRequest.interval = mapSettings["intervalMilliSeconds"] as? Long ?: 1000
+        locationRequest.smallestDisplacement = mapSettings["distanceFilterMeter"] as? Float ?: 0.0f
+        var accuracy : Any = mapSettings["accuracy"].toString()
+        when(accuracy) {
+            "LocationAccuracy.powerSave" -> accuracy = LocationRequest.PRIORITY_NO_POWER
+            "LocationAccuracy.low" -> accuracy = LocationRequest.PRIORITY_LOW_POWER
+            "LocationAccuracy.balanced" -> accuracy = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+            "LocationAccuracy.high" -> accuracy = LocationRequest.PRIORITY_HIGH_ACCURACY
+            "LocationAccuracy.navigation" -> accuracy = LocationRequest.PRIORITY_HIGH_ACCURACY
+            else -> accuracy = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        }
+        locationRequest.priority = accuracy
+    }
+
+    private fun setLocationCallback(){
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult?) {
                 locationResult ?: return
@@ -76,17 +108,7 @@ class myLocationService: mService() {
             }
         }
     }
-
-    //start location updates
-    @SuppressLint("MissingPermission")
-    private fun startLocationUpdates() {
-        fusedLocationClient.requestLocationUpdates(
-                locationRequest,
-                locationCallback,
-                null /* Looper */
-        )
-    }
-
+    
     // stop location updates
     private fun stopLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(locationCallback)

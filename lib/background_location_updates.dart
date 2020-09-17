@@ -1,9 +1,13 @@
+library background_location_updates;
+
 import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+
+part 'src/types.dart';
 
 /* 
 Define a callback for Android Native only, when calling from background.
@@ -29,7 +33,7 @@ class BackgroundLocationUpdates {
     return version;
   }
 
-  init(Function appCallback) async {
+  void init(Function appCallback) async {
     /* 
     set the callback for the services 
     used by IOS Native when in foreground and/or background (IOS) 
@@ -48,15 +52,25 @@ class BackgroundLocationUpdates {
     await foregroundChannel.invokeMethod('initialize', callback.toRawHandle());
   }
 
-  start() async {
+  void setLocationSettings({
+    LocationAccuracy accuracy = LocationAccuracy.high,
+    int intervalMilliSeconds = 1000,
+    double distanceFilterMeter = 0,
+  }) async {
+    String json =
+        "{'accuracy': '$accuracy', 'intervalMilliSeconds': $intervalMilliSeconds, 'distanceFilterMeter': $distanceFilterMeter}";
+    await foregroundChannel.invokeMethod("locationSettings", json);
+  }
+
+  void start() async {
     await foregroundChannel.invokeMethod("start");
   }
 
-  stop() async {
+  void stop() async {
     await foregroundChannel.invokeMethod("stop");
   }
 
-  get() async {
+  void get() async {
     await foregroundChannel.invokeMethod("get");
   }
 }

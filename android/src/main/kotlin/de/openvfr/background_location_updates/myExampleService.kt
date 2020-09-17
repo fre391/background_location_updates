@@ -10,10 +10,7 @@ class myExampleService : mService() {
 
     companion object {
         fun startService(context: Context, intent: Intent) {
-            var handleID: Long = intent!!.getLongExtra("handleID", 0L)
-            val startIntent = Intent(context, myExampleService::class.java)
-            startIntent.putExtra("handleID", handleID)
-            ContextCompat.startForegroundService(context, startIntent)
+            ContextCompat.startForegroundService(context, intent)
         }
         fun stopService(context: Context) {
             val stopIntent = Intent(context, myExampleService::class.java)

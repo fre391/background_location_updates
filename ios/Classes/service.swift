@@ -18,8 +18,8 @@ class Service {
     }
     
     // prepare user notification and start service
-    func start() -> Bool{
-        if self.bgTaskId != UIBackgroundTaskIdentifier.invalid {return false}
+    func start(){
+        if self.bgTaskId != UIBackgroundTaskIdentifier.invalid {return}
         
         self.bgTaskId = self.application.beginBackgroundTask(expirationHandler: {
             /* seems not to be called ? */
@@ -45,14 +45,13 @@ class Service {
                 /* room for improovement */
             }
         }
- 
-        return true
+
     }
     
     // prepare user notification and stop service
-    func stop() -> Bool{
+    func stop() {
 
-        if self.bgTaskId == UIBackgroundTaskIdentifier.invalid {return false}
+        if self.bgTaskId == UIBackgroundTaskIdentifier.invalid {return}
         LocalNotification.dispatchlocalNotification(with: "Service stopped", body: "Background Service stopped.", at: Date())
         
         self.finished = true
@@ -61,7 +60,6 @@ class Service {
         self.bgTaskId = UIBackgroundTaskIdentifier.invalid
           
         print("ios: BackgroundTask stopped")
-        return true
     }
 
     // get a random 8 digit manually and send via AppDelegate to Flutter

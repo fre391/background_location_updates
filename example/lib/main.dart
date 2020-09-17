@@ -62,7 +62,9 @@ class _MyHomePageState extends State<MyHomePage> {
     ].request();
     print(statuses[Permission.location]);
 
-    await geoUpdates.init(callback);
+    geoUpdates.init(callback);
+    geoUpdates.setLocationSettings(
+        accuracy: LocationAccuracy.high, intervalMilliSeconds: 1000, distanceFilterMeter: 0);
   }
 
   Future<dynamic> callback(call) {

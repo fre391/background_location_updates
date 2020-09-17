@@ -9,25 +9,51 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     let locationManager = CLLocationManager()
       
     func setup(channel:FlutterMethodChannel){
-        
         self.channel = channel
-        
+    }
+    
+    func setLocationManager(config: String){
         // configure location updates
+        
+        struct Settings: Codable {
+            let accuracy: String
+            let intervalMilliSeconds: Double
+            let distanceFilterMeter: Double
+        }
+        
+        var settings = Settings(accuracy: "LocationAccuracy.high", intervalMilliSeconds:1000, distanceFilterMeter: 0)
+        if (config != "defaults"){
+            let data: Data? = config.data(using: .utf8)
+            settings = try! JSONDecoder().decode(Settings.self, from: data!)
+        }
+        
         locationManager.delegate = self
+        locationManager.pausesLocationUpdatesAutomatically = false
+        locationManager.requestAlwaysAuthorization()
+        locationManager.distanceFilter = settings.distanceFilterMeter as Double
+        var accuracy: CLLocationAccuracy
+        switch (settings.accuracy) {
+          case "LocationAccuracy.powerSave":
+              accuracy = kCLLocationAccuracyKilometer;
+          case "LocationAccuracy.city":
+              accuracy = kCLLocationAccuracyHundredMeters;
+          case "LocationAccuracy.balanced":
+              accuracy = kCLLocationAccuracyNearestTenMeters;
+          case "LocationAccuracy.high":
+              accuracy = kCLLocationAccuracyBest;
+          case "LocationAccuracy.navigation":
+              accuracy = kCLLocationAccuracyBestForNavigation;
+          default:
+              accuracy = kCLLocationAccuracyBest;
+        }
+        locationManager.desiredAccuracy = accuracy
+        
         if #available(iOS 9.0, *) {
             locationManager.allowsBackgroundLocationUpdates = true
-        } else {
-            // Fallback on earlier versions
         }
-        locationManager.pausesLocationUpdatesAutomatically = false
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.distanceFilter = 0.0
-        locationManager.requestAlwaysAuthorization()
-        locationManager.startUpdatingLocation()
+        
         if #available(iOS 11.0, *) {
             locationManager.showsBackgroundLocationIndicator = true
-        } else {
-            // Fallback on earlier versions
         }
     }
     
@@ -43,12 +69,16 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         self.onLocation(location: l)
      }
     
-    func start() -> Bool{
-        return false
+    func start(){
+        locationManager.startUpdatingLocation()
+        print("ios: LocationManager started")
+
     }
     
-    func stop() -> Bool{
-        return false
+    func stop(){
+        locationManager.stopUpdatingLocation()
+        print("ios: LocationManager stopped")
+
     }
     
     func onLocation(location: mLocation){
@@ -81,3 +111,4 @@ public struct mLocation: Codable {
     var accuracy: [Float] = [0.0, 0.0, 0.0]
     var isMocked: Bool = false
 }
+
