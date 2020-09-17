@@ -9,6 +9,18 @@ import 'package:flutter/services.dart';
 
 part 'src/types.dart';
 
+/*
+ToDo: Implementation of mockedLocation Detection and filter by userSetting
+  https://stackoverflow.com/questions/29232427/ios-detect-mock-locations
+  horizontalAccuracy: 5
+  verticalAccuracy: -1
+  altitude: 0.000000
+  speed: -1
+ToDo: start/stop each service seperately (notifications?)
+ToDo: compassImplementation
+ToDo: interval for RandomService
+*/
+
 /* 
 Define a callback for Android Native only, when calling from background.
 It will use the IsolateNameServer in Flutter to finally call the callback
@@ -54,11 +66,11 @@ class BackgroundLocationUpdates {
 
   void setLocationSettings({
     LocationAccuracy accuracy = LocationAccuracy.high,
-    int intervalMilliSeconds = 1000,
+    int intervalMilliSecondsAndroid = 1000,
     double distanceFilterMeter = 0,
   }) async {
     String json =
-        "{'accuracy': '$accuracy', 'intervalMilliSeconds': $intervalMilliSeconds, 'distanceFilterMeter': $distanceFilterMeter}";
+        "{'accuracy': '$accuracy', 'intervalMilliSeconds': $intervalMilliSecondsAndroid, 'distanceFilterMeter': $distanceFilterMeter}";
     await foregroundChannel.invokeMethod("locationSettings", json);
   }
 

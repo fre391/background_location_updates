@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     geoUpdates.init(callback);
     geoUpdates.setLocationSettings(
-        accuracy: LocationAccuracy.high, intervalMilliSeconds: 1000, distanceFilterMeter: 0);
+        accuracy: LocationAccuracy.high, intervalMilliSecondsAndroid: 1000, distanceFilterMeter: 0);
   }
 
   Future<dynamic> callback(call) {
