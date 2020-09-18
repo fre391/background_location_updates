@@ -115,11 +115,11 @@ Please note: Dont't use in production. Currently this flutter plugin is under co
 ```
 
 Communication with Native Code:
-The plugin communicates with the Native Andoid/IOS API via a MethodChannel ("foregroundChannel"). 
+The plugin communicates with the Native Andoid/IOS API via a MethodChannel ("channel"). 
 The communication back is done via the same Methodchannel which calls the callback in Flutter.
 
 Data Handling in IOS:
-The delivery of all data is done via the same foregroundHandler (even when the app looses its foreground context).
+The delivery of all data is also done directly by use of the same MethodChannel (indepandantly if the app operates in foreground or in background).
 
 Data Handling in Android:
-To enable stable background operation on an Android device additional Android services are launched to deliver all data. The native services communicate (if the app is working in foreground or in background) via an additional MethodChannel ("backgroundChannel") to an internal receiver ("backgroundReceiver") in Flutter. Finally the backgroundReceiver calls the callback via an internal IsolateNameServer.
+To enable background operation on an Android device additional native services are launched to deliver all data. The native services communicate via the MethodChannel to an internal receiver ("backgroundReceiver") in Flutter. Finally the backgroundReceiver calls the callback via an internal IsolateNameServer.

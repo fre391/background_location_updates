@@ -21,11 +21,12 @@ Define a callback for Android Native only, when calling from background.
 It will use the IsolateNameServer in Flutter to finally call the callback
 */
 void backgroudReceiver() {
-  MethodChannel backgroundChannel = MethodChannel('com.example.background_service');
+  MethodChannel channel = MethodChannel('de.openvfr.background_location_updates');
   WidgetsFlutterBinding.ensureInitialized();
 
-  backgroundChannel.setMethodCallHandler((MethodCall call) async {
-    final SendPort send = IsolateNameServer.lookupPortByName('com.example.background_isolate');
+  channel.setMethodCallHandler((MethodCall call) async {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('de.openvfr.background_location_updates');
     send?.send(call);
   });
 }
@@ -34,11 +35,11 @@ class BackgroundLocationUpdates {
   Function listener;
 
   //static const MethodChannel _channel = const MethodChannel('background_location_updates');
-  static const foregroundChannel = const MethodChannel("com.example.service");
+  static const channel = const MethodChannel("de.openvfr.background_location_updates");
   ReceivePort port = ReceivePort();
 
   static Future<String> get platformVersion async {
-    final String version = await foregroundChannel.invokeMethod('getPlatformVersion');
+    final String version = await channel.invokeMethod('getPlatformVersion');
     return version;
   }
 
@@ -50,17 +51,17 @@ class BackgroundLocationUpdates {
     used by IOS Native when in foreground and/or background (IOS) 
     used by Android NAtive when in foreground only
     */
-    foregroundChannel.setMethodCallHandler((call) => this.callback(call));
+    channel.setMethodCallHandler((call) => this.callback(call));
 
     /* 
     register the IsolateNameServer to be called from the BackgroudReceiver and
     call Android Native to initialize the Android Service (used by Android in background only) 
     */
-    IsolateNameServer.registerPortWithName(port.sendPort, 'com.example.background_isolate');
+    IsolateNameServer.registerPortWithName(port.sendPort, 'de.openvfr.background_location_updates');
     port.listen((dynamic call) => this.callback(call));
 
     final cb = PluginUtilities.getCallbackHandle(backgroudReceiver);
-    await foregroundChannel.invokeMethod('initialize', cb.toRawHandle());
+    await channel.invokeMethod('initialize', cb.toRawHandle());
   }
 
   // ignore: missing_return
@@ -107,22 +108,22 @@ class BackgroundLocationUpdates {
         "'distanceFilterMeter': $distanceFilterMeter, " +
         "'mockUpDetection': $mockUpDetection" +
         "}";
-    await foregroundChannel.invokeMethod("locationSettings", json);
+    await channel.invokeMethod("locationSettings", json);
   }
 
   Future<bool> start() async {
-    return await foregroundChannel.invokeMethod("start");
+    return await channel.invokeMethod("start");
   }
 
   Future<bool> stop() async {
-    return await foregroundChannel.invokeMethod("stop");
+    return await channel.invokeMethod("stop");
   }
 
   void getData() async {
-    await foregroundChannel.invokeMethod("get");
+    await channel.invokeMethod("get");
   }
 
   Future<bool> isRunning() async {
-    return await foregroundChannel.invokeMethod("isRunning");
+    return await channel.invokeMethod("isRunning");
   }
 }

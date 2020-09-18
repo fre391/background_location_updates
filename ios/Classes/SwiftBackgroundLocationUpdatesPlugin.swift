@@ -8,14 +8,14 @@ public class SwiftBackgroundLocationUpdatesPlugin: NSObject, FlutterPlugin {
       var isRunning : Bool = false
         
       public static func register(with registrar: FlutterPluginRegistrar) {
-        let channel = FlutterMethodChannel(name: "com.example.service", binaryMessenger: registrar.messenger())
+        let channel = FlutterMethodChannel(name: "de.openvfr.background_location_updates", binaryMessenger: registrar.messenger())
         let instance = SwiftBackgroundLocationUpdatesPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
         instance.setup(registrar: registrar)
       }
 
     private func setup(registrar: FlutterPluginRegistrar){
-        self.channel = FlutterMethodChannel(name: "com.example.service", binaryMessenger: registrar.messenger())
+        self.channel = FlutterMethodChannel(name: "de.openvfr.background_location_updates", binaryMessenger: registrar.messenger())
         
         // configure location updates
         locationservice.setup(channel: self.channel)

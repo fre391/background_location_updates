@@ -27,7 +27,7 @@ import io.flutter.plugin.common.PluginRegistry
 public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.RequestPermissionsResultListener, MethodCallHandler, ActivityAware {
     private lateinit var context: Context
     private lateinit var activity: Activity
-    lateinit var fgChannel: MethodChannel
+    lateinit var channel: MethodChannel
     var handleOfFlutterCallback: Long = 0
     var isRunning: Boolean = false
 
@@ -35,12 +35,12 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         context = flutterPluginBinding.applicationContext
-        fgChannel = MethodChannel(flutterPluginBinding.getFlutterEngine().dartExecutor.binaryMessenger, "com.example.service")
-        fgChannel.setMethodCallHandler(this);
+        channel = MethodChannel(flutterPluginBinding.getFlutterEngine().dartExecutor.binaryMessenger, "de.openvfr.background_location_updates")
+        channel.setMethodCallHandler(this);
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        fgChannel.setMethodCallHandler(null)
+        channel.setMethodCallHandler(null)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -66,7 +66,7 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
     companion object {
         @JvmStatic
         fun registerWith(registrar: Registrar) {
-            val fgChannel = MethodChannel(registrar.messenger(), "com.example.service")
+            val fgChannel = MethodChannel(registrar.messenger(), "de.openvfr.background_location_updates")
             fgChannel.setMethodCallHandler(BackgroundLocationUpdatesPlugin())
             val BackgroundLocationUpdatesPlugin = BackgroundLocationUpdatesPlugin()
             registrar.addRequestPermissionsResultListener(BackgroundLocationUpdatesPlugin)
@@ -101,7 +101,7 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
                 // request new data manually
                 var cs = myExampleService()
                 val value = cs.getValue()
-                fgChannel.invokeMethod("onData", toJson(arrayOf(value)))
+                channel.invokeMethod("onData", toJson(arrayOf(value)))
                 result.success(value)
             }
             "isRunning" -> {
@@ -150,7 +150,7 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
         myLocationService.startService(context, startIntent2)
 
         isRunning = true;
-        fgChannel.invokeMethod("onStatus", toJson(arrayOf(isRunning)))
+        channel.invokeMethod("onStatus", toJson(arrayOf(isRunning)))
         return isRunning
     }
 
@@ -159,7 +159,7 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
         myExampleService.stopService(context)
         myLocationService.stopService(context)
         isRunning = false;
-        fgChannel.invokeMethod("onStatus", toJson(arrayOf(isRunning)))
+        channel.invokeMethod("onStatus", toJson(arrayOf(isRunning)))
         return isRunning
     }
 

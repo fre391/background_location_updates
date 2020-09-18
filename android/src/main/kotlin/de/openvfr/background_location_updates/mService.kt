@@ -20,7 +20,7 @@ open class mService : Service() {
     val context = this
 
     private var backgroundFlutterView: FlutterNativeView? = null
-    lateinit var backgroundChannel : MethodChannel
+    lateinit var channel : MethodChannel
     var handleOfFlutterCallback: Long = 0L
     var isRunning = false;
 
@@ -46,8 +46,8 @@ open class mService : Service() {
                     FlutterMain.findAppBundlePath(context)!!, callbackInfo
             )
             backgroundFlutterEngine!!.getDartExecutor().executeDartCallback(args)
-            backgroundChannel = MethodChannel(backgroundFlutterEngine!!.getDartExecutor().
-            getBinaryMessenger(), "com.example.background_service")
+            channel = MethodChannel(backgroundFlutterEngine!!.getDartExecutor().
+            getBinaryMessenger(), "de.openvfr.background_location_updates")
         }
 
         // prepare user notification and start service
@@ -76,7 +76,7 @@ open class mService : Service() {
     open fun onData(method: String, value: Any){
         FlutterMain.startInitialization(context)
         FlutterMain.ensureInitializationComplete(context, null)
-        backgroundChannel.invokeMethod(method, toJson(value))
+        channel.invokeMethod(method, toJson(value))
     }
 
     fun toJson(value:Any): String {
