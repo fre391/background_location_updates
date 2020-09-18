@@ -108,6 +108,9 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
                 fgChannel.invokeMethod("onData", toJson(arrayOf(value)))
                 result.success(value)
             }
+            "isRunning" -> {
+                result.success(isRunning)
+            }
             "initialize" -> {
                 // get the FlutterCallbackHandle, later we'll send it to the Service (when started)
                 if (handleOfFlutterCallback == 0L) handleOfFlutterCallback = call.arguments.toString().toLong()
@@ -151,7 +154,6 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
         myLocationService.startService(context, startIntent2)
         fgChannel.invokeMethod("onMessage", toJson("Service started"))
         isRunning = true;
-        fgChannel.invokeMethod("onStatus", toJson(arrayOf(isRunning)))
     }
 
     fun stop() {
@@ -160,7 +162,6 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
         myLocationService.stopService(context)
         fgChannel.invokeMethod("onMessage", toJson("Service stopped"))
         isRunning = false;
-        fgChannel.invokeMethod("onStatus", toJson(arrayOf(isRunning)))
     }
 
     fun toJson(value: Any): String {

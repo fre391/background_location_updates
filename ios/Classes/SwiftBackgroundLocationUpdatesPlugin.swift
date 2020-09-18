@@ -31,7 +31,6 @@ public class SwiftBackgroundLocationUpdatesPlugin: NSObject, FlutterPlugin {
                 self.locationservice.start()
                 self.callback("onMessage", data: "Service started")
                 self.isRunning = true;
-                self.callback("onStatus", data: [self.isRunning] )
                result(true)
              case "stop":
                // stop the Service manually
@@ -39,7 +38,6 @@ public class SwiftBackgroundLocationUpdatesPlugin: NSObject, FlutterPlugin {
                 self.locationservice.stop()
                 self.callback("onMessage", data: "Service stopped")
                 self.isRunning = false;
-                self.callback("onStatus", data: [self.isRunning] )
                 result(true)
            case "locationSettings":
                 var settings = call.arguments as! String
@@ -51,6 +49,8 @@ public class SwiftBackgroundLocationUpdatesPlugin: NSObject, FlutterPlugin {
                let success = self.service.get()
                self.callback("onMessage", data: "Service value")
                result(success)
+           case "isRunning":
+                result(isRunning)
              case "initialize":
                 /* not used in IOS (Andoid only)*/
                 return

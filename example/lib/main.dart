@@ -34,12 +34,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  BackgroundLocationUpdates geoUpdates = new BackgroundLocationUpdates();
+  BackgroundLocationUpdates locationUpdates = new BackgroundLocationUpdates();
 
   List<String> logArray = List();
   int logLength = 60;
   DateTime lastUpdate = DateTime.now();
-  String status = "";
   String location = "";
   bool soundOn = true;
   bool isRunning = false;
@@ -60,58 +59,54 @@ class _MyHomePageState extends State<MyHomePage> {
     ].request();
     print(statuses[Permission.location]);
 
-    geoUpdates.init((method, args) {
-      switch (method) {
-        case "onMessage":
-          setState(() {
-            String s = args;
-            status = s;
-            print(args);
-          });
-          break;
-        case "onLocation":
-          setState(() {
-            Location location = args;
-            var point = LatLng(location.latitude, location.longitude);
-            points.add(point);
-            print("New Location: ${location.latitude} / ${location.longitude}");
-          });
-          break;
-        case "onData":
-          if (soundOn) FlutterBeep.beep();
-          updateState(args.toString());
-          break;
-        case "onStatus":
-          setState(() {
-            isRunning = args;
-          });
-          break;
-      }
+    locationUpdates.setCallback((method, args) {
+      updateState(method, args);
     });
-    geoUpdates.setLocationSettings(
+    locationUpdates.configureSettings(
         accuracy: LocationAccuracy.high, intervalMilliSecondsAndroid: 1000, distanceFilterMeter: 0);
   }
 
-  updateState(String msg) {
-    setState(() {
-      var now = DateTime.now();
-      Duration diff = now.difference(lastUpdate);
-      lastUpdate = now;
+  updateState(String method, dynamic args) async {
+    isRunning = await locationUpdates.isRunning();
 
-      String time =
-          "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
+    switch (method) {
+      case "onStatus":
+        setState(() {
+          isRunning = args;
+        });
+        break;
+      case "onLocation":
+        setState(() {
+          Location location = args;
+          var point = LatLng(location.latitude, location.longitude);
+          points.add(point);
+          print("New Location: ${location.latitude} / ${location.longitude}");
+        });
+        break;
+      case "onData":
+        if (soundOn) FlutterBeep.beep();
+        String msg = args.toString();
 
-      if (diff.inSeconds > 1) {
-        msg += "\n\n";
-      }
+        var now = DateTime.now();
+        String time =
+            "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
 
-      logArray = logArray.reversed.toList();
-      if (logArray.length > logLength) logArray = logArray.sublist(1);
-      logArray.add("$time - $msg\n"); //$log";
-      logArray = logArray.reversed.toList();
+        Duration diff = now.difference(lastUpdate);
 
-      print("Data received: $time - $msg");
-    });
+        setState(() {
+          lastUpdate = now;
+          if (diff.inSeconds > 1) {
+            msg += "\n\n";
+          }
+
+          logArray = logArray.reversed.toList();
+          if (logArray.length > logLength) logArray = logArray.sublist(1);
+          logArray.add("$time - $msg\n"); //$log";
+          logArray = logArray.reversed.toList();
+        });
+        print("Data received: $time - $msg");
+        break;
+    }
   }
 
   @override
@@ -130,8 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ? RaisedButton(
                           onPressed: () async {
                             /* start service via forgroundChannel */
-                            geoUpdates.start();
-                            status = "STARTED";
+                            locationUpdates.start();
                             setState(() {});
                           },
                           child: Icon(Icons.play_arrow),
@@ -140,8 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       : RaisedButton(
                           onPressed: () async {
                             /* stop service via forgroundChannel */
-                            geoUpdates.stop();
-                            status = "STOPPED";
+                            locationUpdates.stop();
                             setState(() {});
                           },
                           child: Icon(Icons.stop),
@@ -150,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   RaisedButton(
                     onPressed: () async {
                       /* request data via forgroundChannel */
-                      geoUpdates.get();
+                      locationUpdates.getData();
                     },
                     child: Icon(Icons.autorenew),
                     padding: EdgeInsets.all(15),
@@ -166,7 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: EdgeInsets.all(15),
                   ),
                 ]),
-                Text("\n" + status + "\n"),
+                (isRunning) ? Text("\nSTARTED\n") : Text("\nSTOPPED\n"),
                 Expanded(
                     child: SingleChildScrollView(
                   child: Column(

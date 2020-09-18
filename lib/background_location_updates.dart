@@ -11,16 +11,17 @@ import 'package:flutter/services.dart';
 part 'src/types.dart';
 
 /*
-ToDo: Enable mockDetection 
+ToDo: check indicator isRunning
+ToDo: Setting Enable mockDetection 
 ToDo: Implementation of mockedLocation Detection
   https://stackoverflow.com/questions/29232427/ios-detect-mock-locations
   horizontalAccuracy: 5
   verticalAccuracy: -1
   altitude: 0.000000
   speed: -1
+ToDo: refactor Random to compass (incl. interval parameter)
+ToDo: getLocation (get a single Location)
 ToDo: start/stop each service seperately (notifications?)
-ToDo: compassImplementation
-ToDo: interval for RandomService
 */
 
 /* 
@@ -49,7 +50,7 @@ class BackgroundLocationUpdates {
     return version;
   }
 
-  void init(Function listener) async {
+  void setCallback(Function listener) async {
     this.listener = listener;
 
     /* 
@@ -97,14 +98,11 @@ class BackgroundLocationUpdates {
       case "onData":
         data = args[0];
         break;
-      case "onStatus":
-        data = args[0];
-        break;
     }
     listener(method, data);
   }
 
-  void setLocationSettings({
+  void configureSettings({
     LocationAccuracy accuracy = LocationAccuracy.high,
     int intervalMilliSecondsAndroid = 1000,
     double distanceFilterMeter = 0,
@@ -122,7 +120,11 @@ class BackgroundLocationUpdates {
     await foregroundChannel.invokeMethod("stop");
   }
 
-  void get() async {
+  void getData() async {
     await foregroundChannel.invokeMethod("get");
+  }
+
+  Future<bool> isRunning() async {
+    return foregroundChannel.invokeMethod("isRunning");
   }
 }
