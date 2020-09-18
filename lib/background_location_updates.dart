@@ -11,14 +11,7 @@ import 'package:flutter/services.dart';
 part 'src/types.dart';
 
 /*
-ToDo: check indicator isRunning
-ToDo: Setting Enable mockDetection 
-ToDo: Implementation of mockedLocation Detection
-  https://stackoverflow.com/questions/29232427/ios-detect-mock-locations
-  horizontalAccuracy: 5
-  verticalAccuracy: -1
-  altitude: 0.000000
-  speed: -1
+
 ToDo: refactor Random to compass (incl. interval parameter)
 ToDo: getLocation (get a single Location)
 ToDo: start/stop each service seperately (notifications?)
@@ -77,8 +70,8 @@ class BackgroundLocationUpdates {
     var args = jsonDecode(call.arguments);
     var data;
     switch (method) {
-      case "onMessage":
-        data = args;
+      case "onStatus":
+        data = args[0];
         break;
       case "onLocation":
         Location location = new Location();
@@ -98,26 +91,32 @@ class BackgroundLocationUpdates {
       case "onData":
         data = args[0];
         break;
+      default:
+        method = null;
     }
-    listener(method, data);
+    if (method != null) listener(method, data);
   }
 
-  void configureSettings({
-    LocationAccuracy accuracy = LocationAccuracy.high,
-    int intervalMilliSecondsAndroid = 1000,
-    double distanceFilterMeter = 0,
-  }) async {
-    String json =
-        "{'accuracy': '$accuracy', 'intervalMilliSeconds': $intervalMilliSecondsAndroid, 'distanceFilterMeter': $distanceFilterMeter}";
+  void configureSettings(
+      {LocationAccuracy accuracy = LocationAccuracy.high,
+      int intervalMilliSecondsAndroid = 1000,
+      double distanceFilterMeter = 0,
+      bool mockUpDetection = true}) async {
+    String json = "{" +
+        "'accuracy': '$accuracy', " +
+        "'intervalMilliSeconds': $intervalMilliSecondsAndroid, " +
+        "'distanceFilterMeter': $distanceFilterMeter, " +
+        "'mockUpDetection': $mockUpDetection" +
+        "}";
     await foregroundChannel.invokeMethod("locationSettings", json);
   }
 
-  void start() async {
-    await foregroundChannel.invokeMethod("start");
+  Future<bool> start() async {
+    return await foregroundChannel.invokeMethod("start");
   }
 
-  void stop() async {
-    await foregroundChannel.invokeMethod("stop");
+  Future<bool> stop() async {
+    return await foregroundChannel.invokeMethod("stop");
   }
 
   void getData() async {
@@ -125,6 +124,6 @@ class BackgroundLocationUpdates {
   }
 
   Future<bool> isRunning() async {
-    return foregroundChannel.invokeMethod("isRunning");
+    return await foregroundChannel.invokeMethod("isRunning");
   }
 }

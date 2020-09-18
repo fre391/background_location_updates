@@ -63,7 +63,10 @@ class _MyHomePageState extends State<MyHomePage> {
       updateState(method, args);
     });
     locationUpdates.configureSettings(
-        accuracy: LocationAccuracy.high, intervalMilliSecondsAndroid: 1000, distanceFilterMeter: 0);
+        accuracy: LocationAccuracy.high,
+        intervalMilliSecondsAndroid: 1000,
+        distanceFilterMeter: 0,
+        mockUpDetection: true);
   }
 
   updateState(String method, dynamic args) async {
@@ -125,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ? RaisedButton(
                           onPressed: () async {
                             /* start service via forgroundChannel */
-                            locationUpdates.start();
+                            isRunning = await locationUpdates.start();
                             setState(() {});
                           },
                           child: Icon(Icons.play_arrow),
@@ -134,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       : RaisedButton(
                           onPressed: () async {
                             /* stop service via forgroundChannel */
-                            locationUpdates.stop();
+                            isRunning = await locationUpdates.stop();
                             setState(() {});
                           },
                           child: Icon(Icons.stop),

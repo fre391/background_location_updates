@@ -54,7 +54,7 @@ class myLocationService: mService() {
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates(mapSettings: Map<String, Any>) {
         setLocationRequest(mapSettings)
-        setLocationCallback()
+        setLocationCallback(mapSettings)
         fusedLocationClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
@@ -65,6 +65,7 @@ class myLocationService: mService() {
     private fun setLocationRequest(mapSettings: Map<String, Any>){
         locationRequest = LocationRequest()
         locationRequest.fastestInterval = mapSettings["intervalMilliSeconds"] as? Long ?: 1000
+        
         locationRequest.interval = mapSettings["intervalMilliSeconds"] as? Long ?: 1000
         locationRequest.smallestDisplacement = mapSettings["distanceFilterMeter"] as? Float ?: 0.0f
         var accuracy : Any = mapSettings["accuracy"].toString()
@@ -79,15 +80,19 @@ class myLocationService: mService() {
         locationRequest.priority = accuracy
     }
 
-    private fun setLocationCallback(){
+    private fun setLocationCallback(mapSettings: Map<String, Any>){
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult?) {
                 locationResult ?: return
 
                 if (locationResult.locations.isNotEmpty()) {
                     val location : Location = locationResult.lastLocation
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
-                        if (location.isFromMockProvider) return
+
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2){
+                        val mockDetection = mapSettings["mockUpDetection"] as? Boolean ?: true
+                        if (location.isFromMockProvider  && mockDetection) return
+                    }
+                        
                     var locationStr:String = location.latitude.toString() + " / " + location.longitude.toString();
                     Log.i("myLocationService", locationStr)
 

@@ -82,20 +82,17 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
                         ActivityCompat.requestPermissions(activity,
                                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
                                         Manifest.permission.ACCESS_COARSE_LOCATION), 101)
-                        this.stop()
-                        //result.success(false)
+
+                        result.success(this.stop())
                     } else {
-                        this.start()
-                        //result.success(true)
+                        result.success(this.start())
                     }
                 } else {
-                    this.start()
-                    //result.success(true)
+                    result.success(this.start())
                 }
             }
             "stop" -> {
-                this.stop()
-                //result.success(false)
+                result.success(this.stop())
             }
             "locationSettings" -> {
                 settingsLocationUpdates = call.arguments.toString()
@@ -104,7 +101,6 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
                 // request new data manually
                 var cs = myExampleService()
                 val value = cs.getValue()
-                fgChannel.invokeMethod("onMessage", toJson("Service value"))
                 fgChannel.invokeMethod("onData", toJson(arrayOf(value)))
                 result.success(value)
             }
@@ -142,7 +138,7 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
         return false
     }
 
-    fun start() {
+    fun start(): Boolean {
         // start the Service manually, also send the FlutterCallbackHandler
         val startIntent1 = Intent(context, myExampleService::class.java)
         startIntent1.putExtra("handleID", handleOfFlutterCallback)
@@ -152,16 +148,19 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
         startIntent2.putExtra("handleID", handleOfFlutterCallback)
         startIntent2.putExtra("settings", settingsLocationUpdates)
         myLocationService.startService(context, startIntent2)
-        fgChannel.invokeMethod("onMessage", toJson("Service started"))
+
         isRunning = true;
+        fgChannel.invokeMethod("onStatus", toJson(arrayOf(isRunning)))
+        return isRunning
     }
 
-    fun stop() {
+    fun stop(): Boolean {
         // stop Service manually
         myExampleService.stopService(context)
         myLocationService.stopService(context)
-        fgChannel.invokeMethod("onMessage", toJson("Service stopped"))
         isRunning = false;
+        fgChannel.invokeMethod("onStatus", toJson(arrayOf(isRunning)))
+        return isRunning
     }
 
     fun toJson(value: Any): String {

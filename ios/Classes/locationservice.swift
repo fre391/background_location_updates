@@ -5,9 +5,9 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     static let getInstance: LocationService = LocationService()
     let application: UIApplication = UIApplication.shared
     var channel = FlutterMethodChannel()
-     
     let locationManager = CLLocationManager()
-      
+    var settings = mLocationSettings(accuracy: "LocationAccuracy.high", intervalMilliSeconds:1000, distanceFilterMeter: 0, mockUpDetection: false)
+    
     func setup(channel:FlutterMethodChannel){
         self.channel = channel
     }
@@ -15,16 +15,9 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     func setLocationManager(config: String){
         // configure location updates
         
-        struct Settings: Codable {
-            let accuracy: String
-            let intervalMilliSeconds: Double
-            let distanceFilterMeter: Double
-        }
-        
-        var settings = Settings(accuracy: "LocationAccuracy.high", intervalMilliSeconds:1000, distanceFilterMeter: 0)
         if (config != "defaults"){
             let data: Data? = config.data(using: .utf8)
-            settings = try! JSONDecoder().decode(Settings.self, from: data!)
+            settings = try! JSONDecoder().decode(mLocationSettings.self, from: data!)
         }
         
         locationManager.delegate = self
@@ -66,6 +59,16 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         l.speed = Float(locations[locations.count-1].speed)
         l.accuracy = [  Float(locations[locations.count-1].horizontalAccuracy),
                         Float(locations[locations.count-1].verticalAccuracy), 0.0]
+        
+        
+        if (settings.mockUpDetection){
+            // experimental: https://stackoverflow.com/questions/29232427/ios-detect-mock-locations
+            if (l.accuracy[0] == 5 && l.accuracy[1] == -1 &&
+                l.altitude == 0 && l.speed == -1) {
+                l.isMocked = true
+                return
+            }
+        }
         self.onLocation(location: l)
      }
     
@@ -112,3 +115,9 @@ public struct mLocation: Codable {
     var isMocked: Bool = false
 }
 
+struct mLocationSettings: Codable {
+    let accuracy: String
+    let intervalMilliSeconds: Double
+    let distanceFilterMeter: Double
+    let mockUpDetection: Bool
+}
