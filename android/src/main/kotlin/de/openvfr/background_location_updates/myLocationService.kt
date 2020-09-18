@@ -1,24 +1,16 @@
 package de.openvfr.background_location_updates
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.PendingIntent.getActivity
+import android.app.Activity
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.location.Location
-import android.os.Build
 import android.util.Log
-import androidx.annotation.NonNull
-import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
 
 class myLocationService: mService() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -104,7 +96,7 @@ class myLocationService: mService() {
                     l.speed = location.speed
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
                         l.accuracy = arrayOf(location.accuracy, location.verticalAccuracyMeters, location.speedAccuracyMetersPerSecond)
-                    else l.accuracy = arrayOf(location.accuracy,0.0f, 0.0f)
+                    else l.accuracy = arrayOf(location.accuracy, 0.0f, 0.0f)
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
                         l.isMocked = location.isFromMockProvider
 
@@ -136,6 +128,6 @@ class mLocation {
     var altitude:Double = 0.0
     var bearing: Double = 0.0
     var speed: Float = 0.0f
-    var accuracy = arrayOf(0.0f,0.0f, 0.0f)
+    var accuracy = arrayOf(0.0f, 0.0f, 0.0f)
     var isMocked: Boolean = false
 }
