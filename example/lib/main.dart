@@ -59,14 +59,15 @@ class _MyHomePageState extends State<MyHomePage> {
     ].request();
     print(statuses[Permission.location]);
 
-    locationUpdates.setCallback((method, args) {
-      updateState(method, args);
-    });
     locationUpdates.configureSettings(
         accuracy: LocationAccuracy.high,
         intervalMilliSecondsAndroid: 1000,
         distanceFilterMeter: 0,
         mockUpDetection: true);
+
+    locationUpdates.setCallback((method, args) {
+      updateState(method, args);
+    });
   }
 
   updateState(String method, dynamic args) async {

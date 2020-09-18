@@ -73,8 +73,9 @@ import 'package:flutter_beep/flutter_beep.dart';
 
 ```
 
-2. Initialitation (refer example/lib/main.dart)
+2. Permissions (refer example/lib/main.dart)
 ```diff
+
 init() async {
     Map<Permission, PermissionStatus> statuses = await [
         Permission.location,
@@ -83,45 +84,31 @@ init() async {
         Permission.notification
     ].request();
     print(statuses[Permission.location]);
-
-    await geoUpdates.init(callback);
 }
 ```
 
-3. Definition of callback (refer example/lib/main.dart)
+3. Configuration (refer example/lib/main.dart)
+
 ```diff
-Future<dynamic> callback(call) {
-    var args = jsonDecode(call.arguments);
-    switch (call.method) {
-      case "onMessage":     # some general communication
-        onMessage(args);
-        break;
-      case "onLocation":    # receiving location updates
-        onLocation(args);
-        break;
-      case "onData":        # for testing purpose (currently random 8 digits)
-        onData(args[0]);
-        break;
-      case "onStatus":      # status changes
-        onStatus(args[0]);
-        break;
-    }
-}
+locationUpdates.configureSettings(
+    accuracy: LocationAccuracy.high,
+    intervalMilliSecondsAndroid: 1000,
+    distanceFilterMeter: 0,
+    mockUpDetection: true);
+```
+
+4. Definition of callback for location updates (refer example/lib/main.dart)
+```diff
+BackgroundLocationUpdates locationUpdates = new BackgroundLocationUpdates();
+
+locationUpdates.setCallback((method, args) {
+  updateState(method, args);
+});
+
 ```
 
 
 ## Implementation Details
-
-
-### Flutter / Dart
-following soon
-
-### Native Android /Kotlin 
-following soon
-
-### Native IOS / Swift
-following soon
-
 
 ```diff
 Please note: Dont't use in production. Currently this flutter plugin is under construction.
