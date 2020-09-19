@@ -1,0 +1,59 @@
+
+/*
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Flutter",
+            "request": "launch",
+            "type": "dart"
+        }
+    ]
+}
+*/
+
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+            "name": "iPhone 8 Sim (13.3)",
+            "request": "launch",
+			"type": "dart",
+			"deviceId": "iPhone 8"
+		},
+		{
+            "name": "iPad 2 (9.3.5)",
+            "request": "launch",
+			"type": "dart",
+			"deviceId": "iPad 2 (9.3.5)"
+		},
+		{
+			"name": "D5503",
+			"request": "launch",
+			"type": "dart",
+			"deviceId": "D5503"
+		},
+				{
+			"name": "Pixel 3",
+			"request": "launch",
+			"type": "dart",
+			"deviceId": "Pixel 3a"
+		},
+        {
+            "name": "Launch web-client",
+            "type": "chrome",
+            "request": "launch",
+            "file": "${workspaceFolder}/web-client/index.html"
+		},
+
+	],
+	"compounds": [
+		{
+			"name": "All Devices",
+			"configurations": ["Pixel 3", "D5503"],
+		}
+	]
+}
