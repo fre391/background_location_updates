@@ -35,6 +35,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   BackgroundLocationUpdates locationUpdates = new BackgroundLocationUpdates();
+  MapController mapController;
 
   List<String> logArray = List();
   int logLength = 60;
@@ -46,8 +47,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    init();
     super.initState();
+    init();
+    mapController = MapController();
   }
 
   init() async {
@@ -63,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
         accuracy: LocationAccuracy.high,
         intervalMilliSecondsAndroid: 1000,
         distanceFilterMeter: 0,
-        mockUpDetection: true);
+        mockUpDetection: false);
 
     locationUpdates.setCallback((method, args) {
       updateState(method, args);
@@ -173,6 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ? Container(
                               height: 450,
                               child: FlutterMap(
+                                mapController: mapController,
                                 options: MapOptions(
                                   center: LatLng(51.9, 8.4),
                                   zoom: 10.0,

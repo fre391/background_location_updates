@@ -4,18 +4,17 @@ import UIKit
 class Service {
     static let getInstance: Service = Service()
     let application: UIApplication = UIApplication.shared
-    var channel = FlutterMethodChannel()
-        
+    var delegate: ClassBDelegate!
+    
     var bgTaskId: UIBackgroundTaskIdentifier = UIBackgroundTaskIdentifier.invalid
     var finished = true;
+    var lastValue = 0
     
     init(){
         LocalNotification.registerForLocalNotification(on: UIApplication.shared)
     }
     
-    func setup(channel: FlutterMethodChannel){
-        self.channel = channel
-    }
+    func setup(){}
     
     // prepare user notification and start service
     func start(){
@@ -35,8 +34,7 @@ class Service {
             
             // get a random 8 digits and send via AppDelegate to Flutter
             while !self.finished {
-                let value = self.getValue()
-                self.onData(value: value)
+                self.get()
                 sleep(1)
                 // when done, set finished to true (not used here)
                 // If that doesn't happen in time, the expiration handler will do it for us,
@@ -64,10 +62,8 @@ class Service {
 
     // get a random 8 digit manually and send via AppDelegate to Flutter
     func get() -> Bool {
-        DispatchQueue.global(qos: .background).async {
-            let value = self.getValue()
-            self.onData(value: value)
-        }
+        let value = self.getValue()
+        self.onData(value: value)
         return true
     }
  
@@ -83,22 +79,12 @@ class Service {
     // send data to Flutter via AppDelegate
     func onData(value: Int){
         DispatchQueue.main.async {
-            self.callback("onData", data: [value])
+            if let delegate = self.delegate {
+                delegate.callback("onData", data:[value])
+            }
+            //self.callback("onData", data: [value])
         }
     }
     
-        func callback<T: Encodable>(_ method:String, data: T) {
-            let val = self.toJson(data)
-            self.channel.invokeMethod(method, arguments: String(val))
-        }
-    
-       func toJson<T: Encodable>(_ data: T)->String {
-           if let json = try? JSONEncoder().encode(data) {
-               if let str = String(data: json, encoding: .utf8) {
-                   return str
-               }
-           }
-           return ""
-       }
 }
 

@@ -1,12 +1,18 @@
 import Flutter
 import UIKit
 
-public class SwiftBackgroundLocationUpdatesPlugin: NSObject, FlutterPlugin {
+
+protocol ClassBDelegate {
+    func callback<T: Encodable>(_ method:String, data: T)
+}
+
+public class SwiftBackgroundLocationUpdatesPlugin: NSObject, FlutterPlugin, ClassBDelegate {
       let service = Service()
       let locationservice = LocationService()
       var channel = FlutterMethodChannel()
       var isRunning : Bool = false
         
+    
       public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "de.openvfr.background_location_updates", binaryMessenger: registrar.messenger())
         let instance = SwiftBackgroundLocationUpdatesPlugin()
@@ -15,38 +21,39 @@ public class SwiftBackgroundLocationUpdatesPlugin: NSObject, FlutterPlugin {
       }
 
     private func setup(registrar: FlutterPluginRegistrar){
-        self.channel = FlutterMethodChannel(name: "de.openvfr.background_location_updates", binaryMessenger: registrar.messenger())
+        channel = FlutterMethodChannel(name: "de.openvfr.background_location_updates", binaryMessenger: registrar.messenger())
         
         // configure location updates
-        locationservice.setup(channel: self.channel)
-        self.locationservice.setLocationManager(config: "defaults")
-        service.setup(channel: self.channel)
+        locationservice.setup(config: "defaults")
+        locationservice.delegate = self
+        service.setup()
+        service.delegate = self
     }
     
       public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
            switch call.method {
              case "start":
                // start the Service manually
-                self.service.start();
-                self.locationservice.start()
-                self.isRunning = true;
-                self.callback("onStatus", data: self.isRunning)
-                result(self.isRunning)
+                service.start();
+                locationservice.start()
+                isRunning = true;
+                callback("onStatus", data: isRunning)
+                result(isRunning)
              case "stop":
                // stop the Service manually
-                self.service.stop()
-                self.locationservice.stop()
-                self.isRunning = false;
-                self.callback("onStatus", data: self.isRunning)
-                result(self.isRunning)
+                service.stop()
+                locationservice.stop()
+                isRunning = false;
+                callback("onStatus", data: isRunning)
+                result(isRunning)
            case "locationSettings":
                 var settings = call.arguments as! String
                 settings = settings.replacingOccurrences(of: "\'", with: "\"")
-                self.locationservice.setLocationManager(config: settings)
+                locationservice.setup(config: settings)
                 result(true)
            case "get":
                // request new data manually
-               let success = self.service.get()
+               let success = service.get()
                result(success)
            case "isRunning":
                 result(isRunning)
@@ -61,21 +68,13 @@ public class SwiftBackgroundLocationUpdatesPlugin: NSObject, FlutterPlugin {
            }
         }
        
-       /*
-       when application is in background start service automatically
-       (not used in this example)
-       override func applicationDidEnterBackground(_ application: UIApplication) {
-           _ = self.service.start()
-       }
-       */
-       
         /*
         callback for the Service to communicate back to Flutter
         (will be called from the Service)
         */
         func callback<T: Encodable>(_ method:String, data: T) {
-            let val = self.toJson(data)
-            self.channel.invokeMethod(method, arguments: String(val))
+            let val = toJson(data)
+            channel.invokeMethod(method, arguments: String(val))
         }
     
        func toJson<T: Encodable>(_ data: T)->String {
