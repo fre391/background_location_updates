@@ -16,6 +16,7 @@ class myLocationService: mService() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     lateinit var locationRequest: LocationRequest
     lateinit var locationCallback: LocationCallback
+    var continousUpdates = false
 
     companion object {
         fun startService(context: Context, intent: Intent) {
@@ -45,6 +46,18 @@ class myLocationService: mService() {
     //start location updates
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates(mapSettings: Map<String, Any>) {
+        continousUpdates = true
+        setLocationRequest(mapSettings)
+        setLocationCallback(mapSettings)
+        fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                null /* Looper */
+        )
+    }
+
+    private fun requestLocationUpdate(mapSettings: Map<String, Any>){
+        continousUpdates = false
         setLocationRequest(mapSettings)
         setLocationCallback(mapSettings)
         fusedLocationClient.requestLocationUpdates(
@@ -101,6 +114,10 @@ class myLocationService: mService() {
                         l.isMocked = location.isFromMockProvider
 
                     onLocation(l)
+                    if(!continousUpdates) {
+                        stopLocationUpdates()
+                        onDestroy()
+                    }
                 }
             }
         }

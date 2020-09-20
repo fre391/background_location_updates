@@ -94,6 +94,14 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
             "stop" -> {
                 result.success(this.stop())
             }
+            "getLocation" -> {
+                if (!isRunning){
+                    val startIntent2 = Intent(context, myLocationService::class.java)
+                    startIntent2.putExtra("handleID", handleOfFlutterCallback)
+                    startIntent2.putExtra("settings", settingsLocationUpdates)
+                    myLocationService.startService(context, startIntent2)
+                }
+            }
             "locationSettings" -> {
                 settingsLocationUpdates = call.arguments.toString()
             }

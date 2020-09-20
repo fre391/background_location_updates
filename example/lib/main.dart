@@ -153,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   RaisedButton(
                     onPressed: () async {
                       /* request data via forgroundChannel */
-                      //locationUpdates.getLocation();
+                      locationUpdates.getLocation();
                       locationUpdates.getValue();
                     },
                     child: Icon(Icons.location_searching),
