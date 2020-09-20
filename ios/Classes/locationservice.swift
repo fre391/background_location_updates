@@ -6,8 +6,9 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     let locationManager = CLLocationManager()
     var settings = mLocationSettings(accuracy: "LocationAccuracy.high", intervalMilliSeconds:1000, distanceFilterMeter: 0, mockUpDetection: false)
     var delegate: ClassBDelegate!
-    var finished = true;
+    var isRunning = false;
     var lastLocation : mLocation = mLocation()
+    var continousUpdates = false;
     
     func setup(config: String){
         
@@ -65,29 +66,44 @@ class LocationService: NSObject, CLLocationManagerDelegate {
      }
     
     func start(){
+        continousUpdates = true;
         locationManager.delegate = self
         locationManager.startUpdatingLocation()
-        finished = false
+        isRunning = true
         print("ios: LocationManager started")
-        
-        DispatchQueue.global(qos: .background).async {
-            while !self.finished {
-                DispatchQueue.main.async {
-                    if let delegate = self.delegate {
-                        delegate.callback("onLocation", data:self.lastLocation)
-                    }
-                }
-                let interval = UInt32(self.settings.intervalMilliSeconds/1000)
-                sleep(interval)
-            }
-        }
+        getLocationUpdates()
+    }
+    
+    func getLocation(){
+        continousUpdates = false
+        locationManager.delegate = self
+        locationManager.startUpdatingLocation()
+        isRunning = true
+        print("ios: LocationManager started")
+        getLocationUpdates()
     }
     
     func stop(){
         locationManager.stopUpdatingLocation()
         locationManager.delegate = nil
-        finished = true
+        isRunning = false
         print("ios: LocationManager stopped")
+    }
+    
+    func getLocationUpdates(){
+        DispatchQueue.global(qos: .background).async {
+            while self.isRunning {
+                DispatchQueue.main.async {
+                    if let delegate = self.delegate {
+                        delegate.callback("onLocation", data: self.lastLocation)
+                    }
+                }
+                if !self.continousUpdates {self.isRunning = false}
+                let interval = UInt32(self.settings.intervalMilliSeconds/1000)
+                sleep(interval)
+            }
+            self.stop()
+        }
     }
 }
 

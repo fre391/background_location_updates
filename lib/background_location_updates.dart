@@ -119,8 +119,12 @@ class BackgroundLocationUpdates {
     return await channel.invokeMethod("stop");
   }
 
-  void getData() async {
-    await channel.invokeMethod("get");
+  void getLocation() async {
+    await channel.invokeMethod("getLocation");
+  }
+
+  void getValue() async {
+    await channel.invokeMethod("getValue");
   }
 
   Future<bool> isRunning() async {

@@ -46,15 +46,18 @@ public class SwiftBackgroundLocationUpdatesPlugin: NSObject, FlutterPlugin, Clas
                 isRunning = false;
                 callback("onStatus", data: [isRunning])
                 result(isRunning)
+           case "getLocation":
+                if (!isRunning) {locationservice.getLocation()}
+                result(true)
            case "locationSettings":
                 var settings = call.arguments as! String
                 settings = settings.replacingOccurrences(of: "\'", with: "\"")
                 locationservice.setup(config: settings)
                 result(true)
-           case "get":
-               // request new data manually
-               let success = service.get()
-               result(success)
+            case "getValue":
+                // request new data manually
+                if (!isRunning) {service.getValue()}
+                result(true)
            case "isRunning":
                 result(isRunning)
              case "initialize":

@@ -97,7 +97,7 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
             "locationSettings" -> {
                 settingsLocationUpdates = call.arguments.toString()
             }
-            "get" -> {
+            "getValue" -> {
                 // request new data manually
                 var cs = myExampleService()
                 val value = cs.getValue()
