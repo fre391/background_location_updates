@@ -40,16 +40,17 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> logArray = List();
   int logLength = 60;
   DateTime lastUpdate = DateTime.now();
-  String location = "";
   bool soundOn = true;
   bool isRunning = false;
-  List<LatLng> points = List();
+  List<LatLng> locations = List();
+  LatLng lastLocation;
 
   @override
   void initState() {
     super.initState();
-    init();
     mapController = MapController();
+    locations = List();
+    init();
   }
 
   init() async {
@@ -77,17 +78,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
     switch (method) {
       case "onStatus":
-        setState(() {
-          isRunning = args;
-        });
+        isRunning = args;
+        print("Running:" + isRunning.toString());
         break;
       case "onLocation":
-        setState(() {
-          Location location = args;
-          var point = LatLng(location.latitude, location.longitude);
-          points.add(point);
-          print("New Location: ${location.latitude} / ${location.longitude}");
-        });
+        Location location = args;
+        lastLocation = LatLng(location.latitude, location.longitude);
+        if (lastLocation != null) {
+          locations.add(lastLocation);
+          if (mapController.ready) mapController.move(lastLocation, 15.0);
+        }
+        var now = DateTime.now();
+        String time =
+            "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
+
+        print("$time - ${location.latitude} / ${location.longitude}");
         break;
       case "onData":
         if (soundOn) FlutterBeep.beep();
@@ -99,20 +104,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
         Duration diff = now.difference(lastUpdate);
 
-        setState(() {
-          lastUpdate = now;
-          if (diff.inSeconds > 1) {
-            msg += "\n\n";
-          }
+        lastUpdate = now;
+        if (diff.inSeconds > 1) {
+          msg += "\n\n";
+        }
 
-          logArray = logArray.reversed.toList();
-          if (logArray.length > logLength) logArray = logArray.sublist(1);
-          logArray.add("$time - $msg\n"); //$log";
-          logArray = logArray.reversed.toList();
-        });
-        print("Data received: $time - $msg");
+        logArray = logArray.reversed.toList();
+        if (logArray.length > logLength) logArray = logArray.sublist(1);
+        logArray.add("$time - $msg\n"); //$log";
+        logArray = logArray.reversed.toList();
+        print("$time - $msg");
         break;
     }
+    setState(() {});
   }
 
   @override
@@ -171,13 +175,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      (points.length > 0)
+                      (locations.length > 0)
                           ? Container(
                               height: 450,
                               child: FlutterMap(
                                 mapController: mapController,
                                 options: MapOptions(
-                                  center: LatLng(51.9, 8.4),
+                                  center: LatLng(lastLocation.latitude, lastLocation.longitude),
                                   zoom: 10.0,
                                 ),
                                 layers: [
@@ -190,7 +194,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                   PolylineLayerOptions(
                                     polylines: [
                                       Polyline(
-                                          points: points, strokeWidth: 4.0, color: Colors.purple),
+                                          points: locations,
+                                          strokeWidth: 4.0,
+                                          color: Colors.purple),
                                     ],
                                   ),
                                 ],

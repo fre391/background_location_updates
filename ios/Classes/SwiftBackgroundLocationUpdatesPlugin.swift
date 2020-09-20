@@ -37,14 +37,14 @@ public class SwiftBackgroundLocationUpdatesPlugin: NSObject, FlutterPlugin, Clas
                 service.start();
                 locationservice.start()
                 isRunning = true;
-                callback("onStatus", data: isRunning)
+                callback("onStatus", data: [isRunning])
                 result(isRunning)
              case "stop":
                // stop the Service manually
                 service.stop()
                 locationservice.stop()
                 isRunning = false;
-                callback("onStatus", data: isRunning)
+                callback("onStatus", data: [isRunning])
                 result(isRunning)
            case "locationSettings":
                 var settings = call.arguments as! String
