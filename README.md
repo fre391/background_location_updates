@@ -105,8 +105,22 @@ locationUpdates.setCallback((method, args) {
   updateState(method, args);
 });
 
+In updateState the following methods/args are available:
+"onStatus"/ boolean       - indicates, if the service is running
+"onLocation" / Location   - whenever a ew location is delivered
+"onData" / int            - whenever a new random 8 digits is delivered
 ```
 
+5. The status can also be requested by
+```diff
+ isRunning = await locationUpdates.isRunning();
+```
+
+6. Alternatively to continous updates its also possible to request one single Location / random number
+```diff
+locationUpdates.getLocation();
+locationUpdates.getValue();
+```
 
 ## Implementation Details
 

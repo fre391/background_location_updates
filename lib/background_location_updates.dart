@@ -11,7 +11,6 @@ import 'package:flutter/services.dart';
 part 'src/types.dart';
 
 /*
-ToDo: get a single Location (async?)
 ToDo: refactor Random to compass (incl. interval parameter)
 ToDo: start/stop each service seperately (notifications?)
 */
