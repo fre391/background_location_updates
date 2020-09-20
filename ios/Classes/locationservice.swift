@@ -47,13 +47,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        lastLocation.latitude = locations[locations.count-1].coordinate.latitude
-        lastLocation.longitude = locations[locations.count-1].coordinate.longitude
-        lastLocation.altitude = locations[locations.count-1].altitude
-        lastLocation.bearing = locations[locations.count-1].course
-        lastLocation.speed = Float(locations[locations.count-1].speed)
-        lastLocation.accuracy = [  Float(locations[locations.count-1].horizontalAccuracy),
-                        Float(locations[locations.count-1].verticalAccuracy), 0.0]
+        if (locations[locations.count-1].coordinate.latitude == 0 && locations[locations.count-1].coordinate.longitude == 0) {return}
         
         if (settings.mockUpDetection){
             // experimental: https://stackoverflow.com/questions/29232427/ios-detect-mock-locations
@@ -63,6 +57,14 @@ class LocationService: NSObject, CLLocationManagerDelegate {
                 return
             }
         }
+        
+        lastLocation.latitude = locations[locations.count-1].coordinate.latitude
+        lastLocation.longitude = locations[locations.count-1].coordinate.longitude
+        lastLocation.altitude = locations[locations.count-1].altitude
+        lastLocation.bearing = locations[locations.count-1].course
+        lastLocation.speed = Float(locations[locations.count-1].speed)
+        lastLocation.accuracy = [  Float(locations[locations.count-1].horizontalAccuracy),
+                        Float(locations[locations.count-1].verticalAccuracy), 0.0]
      }
     
     func start(){
