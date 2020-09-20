@@ -36,6 +36,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   BackgroundLocationUpdates locationUpdates = new BackgroundLocationUpdates();
   MapController mapController;
+  double zoom = 12;
 
   List<String> logArray = List();
   int logLength = 60;
@@ -86,7 +87,10 @@ class _MyHomePageState extends State<MyHomePage> {
         lastLocation = LatLng(location.latitude, location.longitude);
         if (lastLocation != null) {
           locations.add(lastLocation);
-          if (mapController.ready) mapController.move(lastLocation, 15.0);
+          if (mapController.ready) {
+            zoom = mapController.zoom;
+            mapController.move(lastLocation, zoom);
+          }
         }
         var now = DateTime.now();
         String time =
@@ -183,7 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 mapController: mapController,
                                 options: MapOptions(
                                   center: LatLng(lastLocation.latitude, lastLocation.longitude),
-                                  zoom: 10.0,
+                                  zoom: zoom,
                                 ),
                                 layers: [
                                   TileLayerOptions(
