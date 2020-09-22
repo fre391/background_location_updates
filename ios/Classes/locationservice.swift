@@ -17,7 +17,6 @@ class LocationService: NSObject, CLLocationManagerDelegate {
             settings = try! JSONDecoder().decode(mLocationSettings.self, from: data!)
         }
         
-        locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.requestAlwaysAuthorization()
         locationManager.distanceFilter = settings.distanceFilterMeter as Double
         var accuracy: CLLocationAccuracy
@@ -37,7 +36,8 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         }
         locationManager.desiredAccuracy = accuracy
         
-        if #available(iOS 9.0, *) {
+       locationManager.pausesLocationUpdatesAutomatically = false
+       if #available(iOS 9.0, *) {
             locationManager.allowsBackgroundLocationUpdates = true
         }
         
@@ -65,24 +65,28 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         lastLocation.speed = Float(locations[locations.count-1].speed)
         lastLocation.accuracy = [  Float(locations[locations.count-1].horizontalAccuracy),
                         Float(locations[locations.count-1].verticalAccuracy), 0.0]
+        print (String(lastLocation.latitude) + "/" + String(lastLocation.longitude))
      }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Failed to find user's location: \(error.localizedDescription)")
+    }
     
     func start(){
         continousUpdates = true;
         locationManager.delegate = self
-        locationManager.startUpdatingLocation()
         isRunning = true
+        locationManager.startUpdatingLocation()
         print("ios: LocationManager started")
-        getLocationUpdates()
+        getLocationUpdates(singleRequests: true)
     }
     
     func getLocation(){
-        continousUpdates = false
+        continousUpdates = true
         locationManager.delegate = self
-        locationManager.startUpdatingLocation()
         isRunning = true
         print("ios: LocationManager started")
-        getLocationUpdates()
+        getLocationUpdates(singleRequests: true)
     }
     
     func stop(){
@@ -92,17 +96,29 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         print("ios: LocationManager stopped")
     }
     
-    func getLocationUpdates(){
+    func getLocationUpdates(singleRequests: Bool){
         DispatchQueue.global(qos: .background).async {
             while self.isRunning {
+                /*
+                if (singleRequests) {
+                    if #available(iOS 9.0, *) {
+                        self.locationManager.requestLocation()
+                    }
+                }*/
                 DispatchQueue.main.async {
+                    self.locationManager.startUpdatingLocation()
+                    
+                    if (self.lastLocation.latitude == 0 && self.lastLocation.longitude == 0) {return}
                     if let delegate = self.delegate {
+                        print("-->> " + String(self.lastLocation.latitude) + " / " + String(self.lastLocation.longitude))
                         delegate.callback("onLocation", data: self.lastLocation)
                     }
                 }
                 if !self.continousUpdates {self.isRunning = false}
                 let interval = UInt32(self.settings.intervalMilliSeconds/1000)
                 sleep(interval)
+                self.locationManager.stopUpdatingLocation()
+                sleep(1)
             }
             self.stop()
         }

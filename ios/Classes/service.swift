@@ -60,6 +60,7 @@ class Service {
                 let value = self.getRandom()
                 DispatchQueue.main.async {
                     if let delegate = self.delegate {
+                        print("-->> " + String(value))
                         delegate.callback("onData", data:[value])
                     }
                 }
