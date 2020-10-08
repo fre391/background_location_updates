@@ -24,6 +24,7 @@ class Service {
         bgTaskId = application.beginBackgroundTask(expirationHandler: {
             /* seems not to be called ? */
             print("ios: BackgroundTask \(self.bgTaskId) expired...")
+            self.start()
         })
         LocalNotification.dispatchlocalNotification(with: "Service started", body: "Background Service running.", at: Date())
 

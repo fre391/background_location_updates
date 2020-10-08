@@ -7,7 +7,7 @@ protocol ClassBDelegate {
 }
 
 public class SwiftBackgroundLocationUpdatesPlugin: NSObject, FlutterPlugin, ClassBDelegate {
-      let service = Service()
+      //let service = Service()
       let locationservice = LocationService()
       var channel = FlutterMethodChannel()
       var isRunning : Bool = false
@@ -26,22 +26,22 @@ public class SwiftBackgroundLocationUpdatesPlugin: NSObject, FlutterPlugin, Clas
         // configure location updates
         locationservice.setup(config: "defaults")
         locationservice.delegate = self
-        service.setup()
-        service.delegate = self
+        //service.setup()
+        //service.delegate = self
     }
     
       public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
            switch call.method {
              case "start":
                // start the Service manually
-                service.start();
+                //service.start();
                 locationservice.start()
                 isRunning = true;
                 callback("onStatus", data: [isRunning])
                 result(isRunning)
              case "stop":
                // stop the Service manually
-                service.stop()
+                //service.stop()
                 locationservice.stop()
                 isRunning = false;
                 callback("onStatus", data: [isRunning])
@@ -56,7 +56,7 @@ public class SwiftBackgroundLocationUpdatesPlugin: NSObject, FlutterPlugin, Clas
                 result(true)
             case "getValue":
                 // request new data manually
-                if (!isRunning) {service.getValue()}
+                //if (!isRunning) {service.getValue()}
                 result(true)
            case "isRunning":
                 result(isRunning)
