@@ -90,6 +90,9 @@ init() async {
 3. Configuration (refer example/lib/main.dart)
 
 ```diff
+
+BackgroundLocationUpdates locationUpdates = new BackgroundLocationUpdates();
+  
 locationUpdates.configureSettings(
     accuracy: LocationAccuracy.high,
     intervalMilliSecondsAndroid: 1000,
