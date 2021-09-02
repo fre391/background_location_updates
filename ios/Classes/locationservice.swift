@@ -19,7 +19,6 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         
         locationManager.requestAlwaysAuthorization()
         locationManager.distanceFilter = settings.distanceFilterMeter as Double
-        print("distanceFilter: " + String(locationManager.distanceFilter))
         var accuracy: CLLocationAccuracy
         switch (settings.accuracy) {
           case "LocationAccuracy.powerSave":
@@ -45,10 +44,6 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         if #available(iOS 11.0, *) {
             locationManager.showsBackgroundLocationIndicator = true
         }
-        
-        if #available(iOS 12.0, *) {
-            self.locationManager.activityType=CLActivityType.airborne
-        }
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -56,14 +51,12 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         
         if (settings.mockUpDetection){
             // experimental: https://stackoverflow.com/questions/29232427/ios-detect-mock-locations
-            if (locations[locations.count-1].horizontalAccuracy == 5 &&
-                locations[locations.count-1].verticalAccuracy == -1 &&
-                locations[locations.count-1].altitude == 0 &&
-                locations[locations.count-1].speed == -1)
-            {return}
+            if (lastLocation.accuracy[0] == 5 && lastLocation.accuracy[1] == -1 &&
+                lastLocation.altitude == 0 && lastLocation.speed == -1) {
+                lastLocation.isMocked = true
+                return
+            }
         }
-        
-        if (lastLocation.accuracy[0] != 0 && Float(locations[locations.count-1].horizontalAccuracy) > lastLocation.accuracy[0]) {return}
         
         lastLocation.latitude = locations[locations.count-1].coordinate.latitude
         lastLocation.longitude = locations[locations.count-1].coordinate.longitude
@@ -72,12 +65,12 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         lastLocation.speed = Float(locations[locations.count-1].speed)
         lastLocation.accuracy = [  Float(locations[locations.count-1].horizontalAccuracy),
                         Float(locations[locations.count-1].verticalAccuracy), 0.0]
-        print (String(lastLocation.latitude) + "/" + String(lastLocation.longitude) + " (" + String(lastLocation.accuracy[0]) + ")")
+        print (String(lastLocation.latitude) + "/" + String(lastLocation.longitude))
      }
-    /*
+    
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Failed to find user's location: \(error.localizedDescription)")
-    }*/
+    }
     
     func start(){
         continousUpdates = true;
@@ -102,16 +95,19 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         isRunning = false
         print("ios: LocationManager stopped")
     }
-
+    
     func getLocationUpdates(singleRequests: Bool){
         DispatchQueue.global(qos: .background).async {
             while self.isRunning {
-                /* if (singleRequests) {
-                    if #available(iOS 9.0, *) self.locationManager.requestLocation()
-                    self.continousUpdates = false;
+                /*
+                if (singleRequests) {
+                    if #available(iOS 9.0, *) {
+                        self.locationManager.requestLocation()
+                    }
                 }*/
                 DispatchQueue.main.async {
                     self.locationManager.startUpdatingLocation()
+                    
                     if (self.lastLocation.latitude == 0 && self.lastLocation.longitude == 0) {return}
                     if let delegate = self.delegate {
                         print("-->> " + String(self.lastLocation.latitude) + " / " + String(self.lastLocation.longitude))

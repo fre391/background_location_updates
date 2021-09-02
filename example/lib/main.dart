@@ -197,7 +197,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                     tileProvider: NonCachingNetworkTileProvider(),
                                   ),
                                   PolylineLayerOptions(
-                                    polylineCulling: true,
                                     polylines: [
                                       Polyline(
                                           points: locations,
