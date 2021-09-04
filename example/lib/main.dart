@@ -89,13 +89,12 @@ class _MyHomePageState extends State<MyHomePage> {
       case "onLocation":
         Location location = args;
         lastLocation = LatLng(location.latitude, location.longitude);
-        if (lastLocation != null) {
-          locations.add(lastLocation);
-          if (mapready) {
-            zoom = mapController.zoom;
-            mapController.move(lastLocation, zoom);
-          }
+        locations.add(lastLocation);
+        if (mapready) {
+          zoom = mapController.zoom;
+          mapController.move(lastLocation, zoom);
         }
+
         var now = DateTime.now();
         String time =
             "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
@@ -140,34 +139,31 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
                   (!isRunning)
-                      ? RaisedButton(
+                      ? ElevatedButton(
                           onPressed: () async {
                             /* start service via forgroundChannel */
                             isRunning = await locationUpdates.start();
                             setState(() {});
                           },
                           child: Icon(Icons.play_arrow),
-                          padding: EdgeInsets.all(15),
                         )
-                      : RaisedButton(
+                      : ElevatedButton(
                           onPressed: () async {
                             /* stop service via forgroundChannel */
                             isRunning = await locationUpdates.stop();
                             setState(() {});
                           },
                           child: Icon(Icons.stop),
-                          padding: EdgeInsets.all(15),
                         ),
-                  RaisedButton(
+                  ElevatedButton(
                     onPressed: () async {
                       /* request data via forgroundChannel */
                       locationUpdates.getLocation();
                       locationUpdates.getValue();
                     },
                     child: Icon(Icons.location_searching),
-                    padding: EdgeInsets.all(15),
                   ),
-                  RaisedButton(
+                  ElevatedButton(
                     onPressed: () async {
                       /* toogle sound (Flutter beep) */
                       setState(() {
@@ -175,7 +171,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       });
                     },
                     child: Icon((soundOn) ? Icons.volume_mute : Icons.volume_off),
-                    padding: EdgeInsets.all(15),
                   ),
                 ]),
                 (isRunning) ? Text("\nSTARTED\n") : Text("\nSTOPPED\n"),
