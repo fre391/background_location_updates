@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:background_location_updates/background_location_updates.dart';
 import 'package:flutter_beep/flutter_beep.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:latlong2/latlong.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
@@ -35,22 +35,26 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   BackgroundLocationUpdates locationUpdates = new BackgroundLocationUpdates();
-  MapController mapController;
+  late MapController mapController;
+  bool mapready = false;
   double zoom = 12;
 
-  List<String> logArray = List();
+  List<String> logArray = [];
   int logLength = 60;
   DateTime lastUpdate = DateTime.now();
   bool soundOn = true;
   bool isRunning = false;
-  List<LatLng> locations = List();
-  LatLng lastLocation;
+  List<LatLng> locations = [];
+  late LatLng lastLocation;
 
   @override
   void initState() {
     super.initState();
     mapController = MapController();
-    locations = List();
+    mapController.onReady?.then((value) {
+      mapready = true;
+    });
+    locations = [];
     init();
   }
 
@@ -87,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
         lastLocation = LatLng(location.latitude, location.longitude);
         if (lastLocation != null) {
           locations.add(lastLocation);
-          if (mapController.ready) {
+          if (mapready) {
             zoom = mapController.zoom;
             mapController.move(lastLocation, zoom);
           }
