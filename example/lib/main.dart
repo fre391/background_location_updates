@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     mapController = MapController();
-    mapController.onReady?.then((value) {
+    mapController.onReady.then((value) {
       mapready = true;
     });
     locations = [];
