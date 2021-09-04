@@ -24,14 +24,14 @@ void backgroudReceiver() {
   WidgetsFlutterBinding.ensureInitialized();
 
   channel.setMethodCallHandler((MethodCall call) async {
-    final SendPort send =
+    final SendPort? send =
         IsolateNameServer.lookupPortByName('de.openvfr.background_location_updates');
     send?.send(call);
   });
 }
 
 class BackgroundLocationUpdates {
-  Function listener;
+  late Function listener;
 
   //static const MethodChannel _channel = const MethodChannel('background_location_updates');
   static const channel = const MethodChannel("de.openvfr.background_location_updates");
@@ -60,11 +60,11 @@ class BackgroundLocationUpdates {
     port.listen((dynamic call) => this.callback(call));
 
     final cb = PluginUtilities.getCallbackHandle(backgroudReceiver);
-    await channel.invokeMethod('initialize', cb.toRawHandle());
+    await channel.invokeMethod('initialize', cb!.toRawHandle());
   }
 
   // ignore: missing_return
-  Future<dynamic> callback(call) {
+  callback(call) {
     var method = call.method;
     var args = jsonDecode(call.arguments);
     var data;
