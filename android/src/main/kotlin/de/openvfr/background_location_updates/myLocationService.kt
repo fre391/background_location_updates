@@ -36,7 +36,7 @@ class myLocationService: mService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        var jsonSettings: String? = intent.getStringExtra("settings")
+        var jsonSettings: String? = intent?.getStringExtra("settings")
         val gson = GsonBuilder().create()
         val mapSettings = gson.fromJson<Map<String, Any>>(jsonSettings, object : TypeToken<Map<String, Any>>() {}.type)
         startLocationUpdates(mapSettings)
