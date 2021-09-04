@@ -62,7 +62,7 @@ open class mService : Service() {
 
     // user notification and destroy service
     override fun onDestroy() {
-        val notification = buildNotification("Location Service stopped", "Location Service in background rstopped.");
+        val notification = buildNotification("Location Service stopped", "Location Service in background stopped.");
         notificationManager?.notify(NOTIFICATION_ID, notification);
         isRunning = false
         super.onDestroy()
