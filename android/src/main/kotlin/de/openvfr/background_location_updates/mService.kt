@@ -52,7 +52,7 @@ open class mService : Service() {
 
         // prepare user notification and start service
         createNotificationChannel()
-        var notification = buildNotification("Service started", "Background Service running.");
+        var notification = buildNotification("Location Service started", "Location Service in background running.");
         startForeground(NOTIFICATION_ID, notification)
 
         isRunning = true
@@ -62,7 +62,7 @@ open class mService : Service() {
 
     // user notification and destroy service
     override fun onDestroy() {
-        val notification = buildNotification("Service stopped", "Background Service stopped.");
+        val notification = buildNotification("Location Service stopped", "Location Service in background rstopped.");
         notificationManager?.notify(NOTIFICATION_ID, notification);
         isRunning = false
         super.onDestroy()
