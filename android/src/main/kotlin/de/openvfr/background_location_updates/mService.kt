@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.gson.GsonBuilder
 import de.openvfr.background_location_updates.R
@@ -74,6 +75,7 @@ open class mService : Service() {
 
     // send data to Flutter via backgroundChannel
     open fun onData(method: String, value: Any){
+        Log.i("myService", "onData");
         FlutterMain.startInitialization(context)
         FlutterMain.ensureInitializationComplete(context, null)
         channel.invokeMethod(method, toJson(value))
