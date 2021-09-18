@@ -75,7 +75,6 @@ open class mService : Service() {
 
     // send data to Flutter via backgroundChannel
     open fun onData(method: String, value: Any){
-        Log.i("myService", "onData");
         FlutterMain.startInitialization(context)
         FlutterMain.ensureInitializationComplete(context, null)
         channel.invokeMethod(method, toJson(value))

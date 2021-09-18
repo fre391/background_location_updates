@@ -87,6 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
         print("Running:" + isRunning.toString());
         break;
       case "onLocation":
+        print("onLocation");
         Location location = args;
         lastLocation = LatLng(location.latitude, location.longitude);
         locations.add(lastLocation);
