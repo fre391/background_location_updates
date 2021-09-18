@@ -56,7 +56,9 @@ class BackgroundLocationUpdates {
     register the IsolateNameServer to be called from the BackgroudReceiver and
     call Android Native to initialize the Android Service (used by Android in background only) 
     */
-    //IsolateNameServer.removePortNameMapping('de.openvfr.background_location_updates');
+    if (IsolateNameServer.lookupPortByName('de.openvfr.background_location_updates') != null) {
+      IsolateNameServer.removePortNameMapping('de.openvfr.background_location_updates');
+    }
     bool success = IsolateNameServer.registerPortWithName(
         port.sendPort, 'de.openvfr.background_location_updates');
     print("IsolateNameServer registered: " + success.toString());
