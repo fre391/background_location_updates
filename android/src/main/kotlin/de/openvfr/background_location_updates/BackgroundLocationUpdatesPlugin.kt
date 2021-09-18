@@ -150,6 +150,7 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
         // start the Service manually, also send the FlutterCallbackHandler
         val startIntent1 = Intent(context, myExampleService::class.java)
         startIntent1.putExtra("handleID", handleOfFlutterCallback)
+        startIntent1.putExtra("settings", settingsLocationUpdates)
         myExampleService.startService(context, startIntent1)
 
         val startIntent2 = Intent(context, myLocationService::class.java)

@@ -5,6 +5,10 @@ import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import androidx.core.content.ContextCompat
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import android.util.Log
+import kotlin.math.roundToLong
 
 class myExampleService : mService() {
 
@@ -20,13 +24,17 @@ class myExampleService : mService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId);
+        var jsonSettings: String? = intent?.getStringExtra("settings")
+        val gson = GsonBuilder().create()
+        val settings = gson.fromJson<Map<String, Any>>(jsonSettings, object : TypeToken<Map<String, Any>>() {}.type)
+        var interval: Long = (settings["intervalMilliSeconds"]as Double).toBigDecimal().toLong()
         val mainHandler = Handler(Looper.getMainLooper())
         mainHandler.post(object : Runnable {
             override fun run() {
                 if (isRunning){
                     val value = getValue()
                     onData("onData", arrayOf(value))
-                    mainHandler.postDelayed(this, 1000)
+                    mainHandler.postDelayed(this, interval)
                 }
             }
         })

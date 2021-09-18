@@ -69,10 +69,9 @@ class myLocationService: mService() {
 
     private fun setLocationRequest(mapSettings: Map<String, Any>){
         locationRequest = LocationRequest()
-        locationRequest.fastestInterval = mapSettings["intervalMilliSeconds"] as? Long ?: 1000
-        
-        locationRequest.interval = mapSettings["intervalMilliSeconds"] as? Long ?: 1000
-        locationRequest.smallestDisplacement = mapSettings["distanceFilterMeter"] as? Float ?: 0.0f
+        locationRequest.fastestInterval = (mapSettings["intervalMilliSeconds"] as Double).toBigDecimal().toLong()
+        locationRequest.interval = (mapSettings["intervalMilliSeconds"] as Double).toBigDecimal().toLong()
+        locationRequest.smallestDisplacement = (mapSettings["distanceFilterMeter"] as Double).toFloat()
         var accuracy : Any = mapSettings["accuracy"].toString()
         when(accuracy) {
             "LocationAccuracy.powerSave" -> accuracy = LocationRequest.PRIORITY_NO_POWER
