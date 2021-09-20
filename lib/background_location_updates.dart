@@ -78,7 +78,6 @@ class BackgroundLocationUpdates {
         data = args[0];
         break;
       case "onLocation":
-        print("backgroundLocation: onLocation");
         Location location = new Location();
         location.latitude = args['latitude'].toDouble();
         location.longitude = args['longitude'].toDouble();
