@@ -41,8 +41,10 @@ class myLocationService: mService() {
         val gson = GsonBuilder().create()
         val mapSettings = gson.fromJson<Map<String, Any>>(jsonSettings, object : TypeToken<Map<String, Any>>() {}.type)
 
-        if (updates == "true") startLocationUpdates(mapSettings)
-        else requestLocationUpdate(mapSettings)
+        if (updates == "true") continousUpdates = true
+        else continousUpdates = false
+        
+        startLocationUpdates(mapSettings)
 
         return Service.START_STICKY
     }
