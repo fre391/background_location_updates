@@ -27,7 +27,7 @@ class myExampleService : mService() {
         var jsonSettings: String? = intent?.getStringExtra("settings")
         val gson = GsonBuilder().create()
         val settings = gson.fromJson<Map<String, Any>>(jsonSettings, object : TypeToken<Map<String, Any>>() {}.type)
-        var interval: Long = (settings["intervalMilliSeconds"]as Double).toBigDecimal().toLong()
+        var interval: Long = 5000 //(settings["intervalMilliSeconds"]as Double).toBigDecimal().toLong()
         val mainHandler = Handler(Looper.getMainLooper())
         mainHandler.post(object : Runnable {
             override fun run() {

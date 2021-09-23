@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     locationUpdates.configureSettings(
         accuracy: LocationAccuracy.high,
-        intervalMilliSecondsAndroid: 1000,
+        intervalMilliSecondsAndroid: 100,
         distanceFilterMeter: 0,
         mockUpDetection: false);
 
@@ -88,6 +88,8 @@ class _MyHomePageState extends State<MyHomePage> {
         break;
       case "onLocation":
         print("onLocation");
+        if (soundOn) FlutterBeep.beep();
+
         Location location = args;
         lastLocation = LatLng(location.latitude, location.longitude);
         locations.add(lastLocation);
@@ -103,7 +105,6 @@ class _MyHomePageState extends State<MyHomePage> {
         print("$time - ${location.latitude} / ${location.longitude}");
         break;
       case "onData":
-        if (soundOn) FlutterBeep.beep();
         String msg = args.toString();
 
         var now = DateTime.now();
