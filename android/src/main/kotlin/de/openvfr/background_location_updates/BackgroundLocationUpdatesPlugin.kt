@@ -99,6 +99,7 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
                     val startIntent2 = Intent(context, myLocationService::class.java)
                     startIntent2.putExtra("handleID", handleOfFlutterCallback)
                     startIntent2.putExtra("settings", settingsLocationUpdates)
+                    startIntent2.putExtra("continousUpdates", "false")
                     myLocationService.startService(context, startIntent2)
                 }
             }
@@ -156,6 +157,7 @@ public class BackgroundLocationUpdatesPlugin : FlutterPlugin, PluginRegistry.Req
         val startIntent2 = Intent(context, myLocationService::class.java)
         startIntent2.putExtra("handleID", handleOfFlutterCallback)
         startIntent2.putExtra("settings", settingsLocationUpdates)
+        startIntent2.putExtra("continousUpdates", "true")
         myLocationService.startService(context, startIntent2)
 
         isRunning = true;
