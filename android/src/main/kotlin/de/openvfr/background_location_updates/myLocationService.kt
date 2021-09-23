@@ -52,18 +52,6 @@ class myLocationService: mService() {
     //start location updates
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates(mapSettings: Map<String, Any>) {
-        continousUpdates = true
-        setLocationRequest(mapSettings)
-        setLocationCallback(mapSettings)
-        fusedLocationClient.requestLocationUpdates(
-                locationRequest,
-                locationCallback,
-                null /* Looper */
-        )
-    }
-
-    private fun requestLocationUpdate(mapSettings: Map<String, Any>){
-        continousUpdates = false
         setLocationRequest(mapSettings)
         setLocationCallback(mapSettings)
         fusedLocationClient.requestLocationUpdates(
